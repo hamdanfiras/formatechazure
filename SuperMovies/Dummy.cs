@@ -17,4 +17,8 @@ namespace SuperMovies
             services.AddScoped<Dummy>();
         }
     }
+
+    public partial class Hello
+    {
+    }
 }

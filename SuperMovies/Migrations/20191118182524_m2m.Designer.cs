@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SuperMovies.Models;
 
 namespace SuperMovies.Migrations
 {
     [DbContext(typeof(DB))]
-    partial class DBModelSnapshot : ModelSnapshot
+    [Migration("20191118182524_m2m")]
+    partial class m2m
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,6 +27,9 @@ namespace SuperMovies.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("DirectorId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
@@ -36,22 +41,9 @@ namespace SuperMovies.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DirectorId");
+
                     b.ToTable("Movies");
-                });
-
-            modelBuilder.Entity("SuperMovies.Models.MoviePerson", b =>
-                {
-                    b.Property<Guid>("MovieId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PersonId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("MovieId", "PersonId");
-
-                    b.HasIndex("PersonId");
-
-                    b.ToTable("MoviePerson");
                 });
 
             modelBuilder.Entity("SuperMovies.Models.Person", b =>
@@ -68,19 +60,11 @@ namespace SuperMovies.Migrations
                     b.ToTable("Persons");
                 });
 
-            modelBuilder.Entity("SuperMovies.Models.MoviePerson", b =>
+            modelBuilder.Entity("SuperMovies.Models.Movie", b =>
                 {
-                    b.HasOne("SuperMovies.Models.Movie", "Movie")
-                        .WithMany("Persons")
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SuperMovies.Models.Person", "Person")
-                        .WithMany("Movies")
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("SuperMovies.Models.Person", "Director")
+                        .WithMany()
+                        .HasForeignKey("DirectorId");
                 });
 #pragma warning restore 612, 618
         }
