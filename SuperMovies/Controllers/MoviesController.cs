@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,15 +12,17 @@ namespace SuperMovies.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MoviesController : ControllerBase
+    public class MoviesController : BaseController
     {
         private readonly DB db;
         private readonly Dummy dummy;
+       
 
-        public MoviesController(DB db, Dummy dummy)
+        public MoviesController(DB db, Dummy dummy, ClientInfo client) : base(client)
         {
             this.db = db;
             this.dummy = dummy;
+           
         }
 
         [HttpGet("")]
@@ -30,8 +33,11 @@ namespace SuperMovies.Controllers
         }
 
         [HttpGet("list")]
+       
         public ActionResult List(bool loadDirector = false)
         {
+
+            var user = this.User?.Identity?.Name;
             //var moviesQuery = db.Movies.AsNoTracking();
             //if (loadDirector)
             //{
@@ -44,7 +50,7 @@ namespace SuperMovies.Controllers
             //    .Select(m => new Movie { Id = m.id, Title = m.title })
             //    .ToList();
 
-      
+
             var movies = db.Movies.AsNoTracking()
                 .Include(m => m.Persons).ThenInclude(p => p.Person)
                 .ToList();
@@ -86,5 +92,20 @@ namespace SuperMovies.Controllers
             await db.SaveChangesAsync();
             return NoContent();
         }
+
+
+        [HttpGet("foo")]
+        public async Task<ActionResult> Foo(string lang)
+        {
+            var user = this.User?.Identity?.Name;
+            var bar = new Bar { FirstName =  this.ClientInfo.Culture == "ar-LB" ? "Abou Zelof" : "Firas", TheTime = TimeSpan.FromDays(1) };
+            return Ok(bar);
+        }
+    }
+
+    public class Bar
+    {
+        public string FirstName { get; set; }
+        public TimeSpan? TheTime { get; set; }
     }
 }
