@@ -26,3 +26,14 @@ steps:
   inputs:
    pathToPublish: $(Build.ArtifactStagingDirectory)
    artifactName: AspNetCoreExample
+
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Pay-As-You-Go-1 (dbf63b9b-9205-4364-b3c2-9b6a3936db03)'
+    appType: 'webApp'
+    WebAppName: 'footraining'
+    deployToSlotOrASE: true
+    ResourceGroupName: 'foo'
+    SlotName: 'production'
+    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
